@@ -15,9 +15,12 @@ import { Form } from "@/components/ui/form";
 import CustomInput from "./CustomInput";
 import { authFormSchema } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { getLoggedInUser, signIn, signUp } from "@/lib/actions/user.actions";
 
 const AuthForm = ({ type }: { type: string }) => {
-  const [user, setUser] = useState(null);
+  const router = useRouter();
+  const [user, setUser] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
   const formSchema = authFormSchema(type);
@@ -33,13 +36,41 @@ const AuthForm = ({ type }: { type: string }) => {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-    console.log(values);
-    setIsLoading(false);
-  }
+
+    try {
+      // signup with AppWrite
+      // create a Plaid token
+      const isSigningUp = type === "sign-up";
+      const isSigningIn = type === "sign-in";
+
+      if (isSigningUp) {
+        // do signup stuff
+        const newUser = await signUp(data);
+        setUser(newUser);
+      }
+
+      if (isSigningIn) {
+        // do signin stuff
+        // attempt to signIn th user
+        const response = await signIn({
+          email: data.email,
+          password: data.password,
+        });
+        // if we get back a user, navigate to the homepage
+        if (response) {
+          router.push("/");
+        }
+      }
+    } catch (error) {
+      // log the error
+      console.log(data);
+    } finally {
+      // ensure that in any case, we reset isLoading to false
+      setIsLoading(false);
+    }
+  };
 
   return (
     <section className="auth-form">
