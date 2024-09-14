@@ -10,9 +10,15 @@ type SignInProps = {
   password: string;
 };
 
+const SESSION_NAME = "appwrite-session";
+
 export const signIn = async ({ email, password }: SignInProps) => {
   try {
     // mutation / database query / fetch request / etc...
+
+    const { account } = await createAdminClient();
+    const response = await account.createEmailPasswordSession(email, password);
+    return parseStringify(response);
   } catch (error) {
     console.error("Error", error);
   }
@@ -35,7 +41,7 @@ export const signUp = async (userData: SignUpParams) => {
     );
     const session = await account.createEmailPasswordSession(email, password);
 
-    cookies().set("appwrite-session", session.secret, {
+    cookies().set(SESSION_NAME, session.secret, {
       path: "/",
       httpOnly: true,
       sameSite: "strict",
@@ -45,6 +51,16 @@ export const signUp = async (userData: SignUpParams) => {
     return parseStringify(newUserAccount);
   } catch (error) {
     console.error("Error", error);
+  }
+};
+
+export const signOut = async () => {
+  try {
+    const { account } = await createSessionClient();
+    cookies().delete(SESSION_NAME);
+    await account.deleteSession("current");
+  } catch (error) {
+    return null;
   }
 };
 

@@ -15,7 +15,7 @@ import { Form } from "@/components/ui/form";
 import CustomInput from "./CustomInput";
 import { authFormSchema } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { getLoggedInUser, signIn, signUp } from "@/lib/actions/user.actions";
 
 const AuthForm = ({ type }: { type: string }) => {
@@ -60,7 +60,10 @@ const AuthForm = ({ type }: { type: string }) => {
         });
         // if we get back a user, navigate to the homepage
         if (response) {
-          router.push("/");
+          console.log("AuthForm");
+          console.log(response);
+          // router.push("/");
+          redirect("/");
         }
       }
     } catch (error) {
