@@ -74,15 +74,16 @@ const AuthForm = ({ type }: { type: string }) => {
         });
         // if we get back a user, navigate to the homepage
         if (response) {
-          console.log("AuthForm");
-          console.log(response);
-          // router.push("/");
-          redirect("/");
+          // console.log("AuthForm");
+          // console.log(response);
+          router.push("/");
+          // redirect("/");
         }
       }
     } catch (error) {
       // log the error
       console.log(data);
+      console.log(error);
     } finally {
       // ensure that in any case, we reset isLoading to false
       setIsLoading(false);
