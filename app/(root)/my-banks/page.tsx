@@ -7,7 +7,8 @@ import React from "react";
 const MyBanks = async () => {
   // TODO: consider making this a hook. it's used in a few places
   const loggedIn = await getLoggedInUser();
-  const accounts = loggedIn ? await getAccounts({ userId: loggedIn?.$id }) : [];
+  const accounts = await getAccounts({ userId: loggedIn?.$id });
+  const accountsData = (accounts && accounts.data) || [];
 
   return (
     <section className="flex">
@@ -20,16 +21,15 @@ const MyBanks = async () => {
           <h2 className="header-2">Your cards</h2>
         </div>
         <div className="flex flex-wrap gap-6">
-          {accounts &&
-            accounts.data.map((account: Account) => {
-              return (
-                <BankCard
-                  key={account.id}
-                  account={account}
-                  userName={loggedIn?.firstName}
-                />
-              );
-            })}
+          {accountsData.map((account: Account) => {
+            return (
+              <BankCard
+                key={account.id}
+                account={account}
+                userName={loggedIn?.firstName}
+              />
+            );
+          })}
         </div>
       </div>
     </section>
